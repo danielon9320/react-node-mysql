@@ -6,12 +6,22 @@ const { validateToken } = require("../middlewares/AuthMiddleware");
 const { sign } = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password, nombre, apellido, edad, DNI } = req.body;
+  console.log(req.body)
   bcrypt.hash(password, 10).then((hash) => {
-    Users.create({
-      username: username,
-      password: hash,
-    });
+    try{
+      Users.create({
+        email: email,
+        password: hash,
+        nombre,
+        apellido,
+        edad,
+        DNI
+      });
+    }
+    catch(err){
+      res.status(400).send('Datos erroneos');
+    }
     res.json("SUCCESS");
   });
 });

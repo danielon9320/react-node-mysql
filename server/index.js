@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
+
 app.use(express.json());
 app.use(cors());
 
@@ -14,6 +15,8 @@ const commentsRouter = require("./routes/Comments");
 app.use("/comments", commentsRouter);
 const usersRouter = require("./routes/Users");
 app.use("/auth", usersRouter);
+const tareasRouter = require("./routes/Tareas");
+app.use("/tareas", tareasRouter);
 
 db.sequelize.sync().then(() => {
   app.listen(3001, () => {

@@ -1,6 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define("Users", {
-    username: {
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    apellido: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    edad: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    DNI: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    email: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -9,6 +25,23 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
+
+  Users.associate = (models) => {
+    Users.hasMany(models.Tareas, {
+      onDelete: "cascade",
+    });
+  };
+
+  sequelize.sync({ alter: true }).then(() => {
+
+  }).catch((err) => {
+    console.log(err);
+  })
+
+
+
+
+
 
   // Users.associate = (models) => {
   //   Users.hasMany(models.Posts, {
