@@ -1,3 +1,5 @@
+const Roles = require("./Roles");
+
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define("Users", {
     nombre: {
@@ -24,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    tipoRol: {
+      type: DataTypes.ENUM('administrador', 'jefe', 'empleado')
+    },
+
   });
 
   Users.associate = (models) => {
@@ -32,16 +38,14 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  sequelize.sync({ alter: true }).then(() => {
+  //Users.belongsToMany(Roles, { through: Roles })
 
-  }).catch((err) => {
-    console.log(err);
-  })
-
-
-
-
-
+  sequelize
+    .sync({ alter: true })
+    .then(() => {})
+    .catch((err) => {
+      console.log(err);
+    });
 
   // Users.associate = (models) => {
   //   Users.hasMany(models.Posts, {

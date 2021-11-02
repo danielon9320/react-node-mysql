@@ -6,7 +6,7 @@ const { validateToken } = require("../middlewares/AuthMiddleware");
 const { sign } = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
-  const { email, password, nombre, apellido, edad, DNI } = req.body;
+  const { email, password, nombre, apellido, edad, DNI, tipoRol } = req.body;
   console.log(req.body)
   bcrypt.hash(password, 10).then((hash) => {
     try{
@@ -16,7 +16,8 @@ router.post("/", async (req, res) => {
         nombre,
         apellido,
         edad,
-        DNI
+        DNI,
+        tipoRol
       });
     }
     catch(err){
@@ -27,20 +28,20 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  const user = await Users.findOne({ where: { username: username } });
+  const user = await Users.findOne({ where: { email: email } });
 
   if (!user) res.json({ error: "User Doesn't Exist" });
 
   bcrypt.compare(password, user.password).then(async (match) => {
-    if (!match) res.json({ error: "Wrong Username And Password Combination" });
+    if (!match) res.json({ error: "Wrong email And Password Combination" });
 
     const accessToken = sign(
-      { username: user.username, id: user.id },
+      { email: user.email, id: user.id },
       "importantsecret"
     );
-    res.json({ token: accessToken, username: username, id: user.id });
+    res.json({ token: accessToken, email: email, id: user.id });
   });
 });
 
