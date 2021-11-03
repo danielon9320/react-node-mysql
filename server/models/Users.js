@@ -27,9 +27,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     tipoRol: {
-      type: DataTypes.ENUM('administrador', 'jefe', 'empleado')
+      type: DataTypes.ENUM("administrador", "jefe", "empleado"),
     },
-
   });
 
   Users.associate = (models) => {
