@@ -12,12 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     estado: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
+    },
+
+    fechaDeAlta: {
+      type: DataTypes.BIGINT,
+      defaultValue: Date.now(),
     }
 
+    
   });
-
- 
 
   return Tareas;
 };

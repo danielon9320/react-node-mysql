@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     edad: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     DNI: {
@@ -32,12 +32,12 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     
-    createdAt: {
+    /*createdAt: {
       allowNull: false,
       
      type: DataTypes.FLOAT,
       defaultValue: Date.now()-3600000,
-    },
+    }*/
 
 
   

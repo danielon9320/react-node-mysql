@@ -12,6 +12,7 @@ router.post("/crearTarea", async (req, res) => {
       descripcion,
       estado,
       AreaTrabajoId,
+     
       UserId
     });
   } catch (err) {

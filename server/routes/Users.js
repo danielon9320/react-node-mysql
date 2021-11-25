@@ -66,8 +66,8 @@ router.get("/all", async (req, res) => {
       const area = await AreaTrabajos.findOne({
         where: { id: user.AreaTrabajoId },
       });
-      //console.log(area);
-      const nombreArea = area.dataValues.nombre;
+      //console.log("gol", area);
+      const nombreArea = area?.dataValues.nombre;
       //console.log(user);
       delete user.dataValues.AreaTrabajoId;
       return { ...user.dataValues, nombreArea };
