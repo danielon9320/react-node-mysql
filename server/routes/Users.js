@@ -66,7 +66,7 @@ router.get("/all", async (req, res) => {
       const area = await AreaTrabajos.findOne({
         where: { id: user.AreaTrabajoId },
       });
-      //console.log("gol", area);
+      console.log("gol", area);
       const nombreArea = area?.dataValues.nombre;
       //console.log(user);
       delete user.dataValues.AreaTrabajoId;
@@ -77,26 +77,48 @@ router.get("/all", async (req, res) => {
   res.json(searchUser);
 });
 
+//hacer get de jefes en sus areas para poder mostrar el detalle en la vista
+router.get("/jefes", async (req, res) => {
+  const listOfBoss = await Users.findAll({ where: { tipoRol: "jefe"  } });
+  const searchBoss = await Promise.all(
+    listOfBoss.map(async (boss) => {
+      //console.log(boss.dataValues)
+      const area = await AreaTrabajos.findOne({
+        where: { id: boss.dataValues.AreaTrabajoId },
+      });
+      const{nombre: nombreArea} = area.dataValues;
+      const listOfEmployees = await Users.findAll({ where: { tipoRol: "empleado", AreaTrabajoId: boss.dataValues.AreaTrabajoId } });
+      //console.log(listOfEmployees[0].dataValues);
+      const listOfEmployeesFilter = await listOfEmployees.map( (employee) => { return employee.dataValues.nombre} );
+      //console.log(listOfEmployeesFilter);
+      return {...boss.dataValues, nombreArea, empleados: listOfEmployeesFilter }
+      //console.log(area);
+    })
+  );
+
+    //console.log(searchBoss);
+    res.json(searchBoss);
+});
+
 //traer  por dni
 
 router.get("/dni/:dniUser", async (req, res) => {
-
   const dniUser = req.params.dniUser;
-  const userByDni = await Users.findOne( { where: { DNI: dniUser}} );
+  const userByDni = await Users.findOne({ where: { DNI: dniUser } });
   res.json(userByDni);
 });
-
 
 //traer empleado por apellido
 
 router.get("/apellido/:apellidoUser", async (req, res) => {
   const apellidoUser = req.params.apellidoUser;
- 
-  const userBySurname = await Users.findAll( { where: { apellido: "Empleadssasso apellido5"}} );
+
+  const userBySurname = await Users.findAll({
+    where: { apellido: "Empleadssasso apellido5" },
+  });
 
   res.json(userBySurname);
 });
-
 
 //baja usuario
 

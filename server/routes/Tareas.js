@@ -5,14 +5,14 @@ const { Users } = require("../models");
 
 router.post("/crearTarea", async (req, res) => {
   console.log(req.body)
-  const { nombre, descripcion, estado, AreaTrabajoId, UserId } = req.body;
+  const { nombre, descripcion, estado, AreaTrabajoId,fechaParaRealizar, UserId } = req.body;
   try {
     Tareas.create({
       nombre,
       descripcion,
       estado,
       AreaTrabajoId,
-     
+      fechaParaRealizar,
       UserId
     });
   } catch (err) {

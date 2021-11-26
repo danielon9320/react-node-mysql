@@ -15,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
     },
 
-    fechaDeAlta: {
-      type: DataTypes.BIGINT,
-      defaultValue: Date.now(),
+    fechaParaRealizar: {
+      type: DataTypes.DATE,
+      defaultValue: false,
     }
 
     
