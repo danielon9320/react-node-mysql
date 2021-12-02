@@ -77,6 +77,63 @@ router.get("/asignment", async (req, res) => {
   res.json(tareaDiaFiltrada);
 });
 
+//asignar tarea (editar tarea ya creada para que un usuario se notifique que la tiene q hacer)
+router.put("/asignarTarea", async (req, res) => {
+
+  
+    const {idTarea, id} = req.body;
+    
+    Tareas.update(
+      { UserId: id },
+      {
+        where: {
+          id: idTarea,
+
+        },
+      }
+    );
+  
+    res.json("Actualizado con exito");
+  });
+ 
+  //modificar estado de tarea
+
+router.put("/estadoTarea", async (req, res) => {
+  //revisar para luego migrar a true or false el estado
+
+    let estadoModificado;
+    let {idTarea, estado} = req.body;
+    console.log(idTarea, estado);
+    
+    if (estado == 0){
+      estadoModificado = 1;
+    } else{
+      estadoModificado = 0;
+    }
+    console.log(estadoModificado);
+    // 0 es pendiente 1 realizado
+    Tareas.update(
+      { estado: estadoModificado },
+      {
+        where: {
+          id: idTarea,
+
+        },
+      }
+    );
+  
+    res.json("Actualizado con exito");
+  });
+ 
+
+
+
+
+
+
+
+
+
 //ver tareas por usuario
 router.get("/:userId", async (req, res) => {
   const userId = req.params.userId;

@@ -5,7 +5,7 @@ const { AreaTrabajos } = require("../models");
 const bcrypt = require("bcrypt");
 const { validateToken } = require("../middlewares/AuthMiddleware");
 const { sign } = require("jsonwebtoken");
-const Tareas = require("../models/Tareas");
+const { Tareas } = require("../models/Tareas");
 
 //creacion usuario
 router.post("/", async (req, res) => {
@@ -79,25 +79,36 @@ router.get("/all", async (req, res) => {
 
 //hacer get de jefes en sus areas para poder mostrar el detalle en la vista
 router.get("/jefes", async (req, res) => {
-  const listOfBoss = await Users.findAll({ where: { tipoRol: "jefe"  } });
+  const listOfBoss = await Users.findAll({ where: { tipoRol: "jefe" } });
   const searchBoss = await Promise.all(
     listOfBoss.map(async (boss) => {
       //console.log(boss.dataValues)
       const area = await AreaTrabajos.findOne({
         where: { id: boss.dataValues.AreaTrabajoId },
       });
-      const{nombre: nombreArea} = area.dataValues;
-      const listOfEmployees = await Users.findAll({ where: { tipoRol: "empleado", AreaTrabajoId: boss.dataValues.AreaTrabajoId } });
+      const { nombre: nombreArea } = area.dataValues;
+      const listOfEmployees = await Users.findAll({
+        where: {
+          tipoRol: "empleado",
+          AreaTrabajoId: boss.dataValues.AreaTrabajoId,
+        },
+      });
       //console.log(listOfEmployees[0].dataValues);
-      const listOfEmployeesFilter = await listOfEmployees.map( (employee) => { return employee.dataValues.nombre} );
-      //console.log(listOfEmployeesFilter);
-      return {...boss.dataValues, nombreArea, empleados: listOfEmployeesFilter }
-      //console.log(area);
+      const listOfEmployeesFilter = await listOfEmployees.map((employee) => {
+        return employee.dataValues.nombre;
+      });
+
+      //traer tareas
+
+      return {
+        ...boss.dataValues,
+        nombreArea,
+        empleados: listOfEmployeesFilter,
+      };
     })
   );
 
-    //console.log(searchBoss);
-    res.json(searchBoss);
+  res.json(searchBoss);
 });
 
 //traer  por dni
@@ -153,9 +164,5 @@ router.put("/update", async (req, res) => {
 router.get("/auth", validateToken, (req, res) => {
   res.json(req.user);
 });
-
-
-
-
 
 module.exports = router;

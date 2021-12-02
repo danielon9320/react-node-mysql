@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     estado: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: false,
+      
     },
 
     fechaParaRealizar: {
