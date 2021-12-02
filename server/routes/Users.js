@@ -5,7 +5,7 @@ const { AreaTrabajos } = require("../models");
 const bcrypt = require("bcrypt");
 const { validateToken } = require("../middlewares/AuthMiddleware");
 const { sign } = require("jsonwebtoken");
-const { Tareas } = require("../models/Tareas");
+const Tareas = require("../models/Tareas");
 
 //creacion usuario
 router.post("/", async (req, res) => {
@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     password,
     nombre,
     apellido,
-    edad,
+    fechaNacimiento,
     DNI,
     tipoRol,
     AreaTrabajoId,
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
         password: hash,
         nombre,
         apellido,
-        edad,
+        fechaNacimiento,
         DNI,
         tipoRol,
         AreaTrabajoId,
@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
       { email: user.email, id: user.id },
       "importantsecret"
     );
-    res.json({ token: accessToken, email: email, id: user.id });
+    res.json({ token: accessToken, user });
   });
 });
 
@@ -79,36 +79,27 @@ router.get("/all", async (req, res) => {
 
 //hacer get de jefes en sus areas para poder mostrar el detalle en la vista
 router.get("/jefes", async (req, res) => {
-  const listOfBoss = await Users.findAll({ where: { tipoRol: "jefe" } });
+  const listOfBoss = await Users.findAll({ where: { tipoRol: "jefe"  } });
   const searchBoss = await Promise.all(
     listOfBoss.map(async (boss) => {
       //console.log(boss.dataValues)
       const area = await AreaTrabajos.findOne({
         where: { id: boss.dataValues.AreaTrabajoId },
       });
-      const { nombre: nombreArea } = area.dataValues;
-      const listOfEmployees = await Users.findAll({
-        where: {
-          tipoRol: "empleado",
-          AreaTrabajoId: boss.dataValues.AreaTrabajoId,
-        },
-      });
+      const{nombre: nombreArea} = area.dataValues;
+      const listOfEmployees = await Users.findAll({ where: { tipoRol: "empleado", AreaTrabajoId: boss.dataValues.AreaTrabajoId } });
       //console.log(listOfEmployees[0].dataValues);
-      const listOfEmployeesFilter = await listOfEmployees.map((employee) => {
-        return employee.dataValues.nombre;
-      });
-
-      //traer tareas
-
-      return {
-        ...boss.dataValues,
-        nombreArea,
-        empleados: listOfEmployeesFilter,
-      };
+      const listOfEmployeesFilter = await listOfEmployees.map( (employee) => { return {id: employee.dataValues.id,
+                                                                                       nombre: employee.dataValues.nombre,
+                                                                                       apellido:employee.dataValues.apellido }} );
+      //console.log(listOfEmployeesFilter);
+      return {...boss.dataValues, nombreArea, empleados: listOfEmployeesFilter }
+      //console.log(area);
     })
   );
 
-  res.json(searchBoss);
+    //console.log(searchBoss);
+    res.json(searchBoss);
 });
 
 //traer  por dni
@@ -134,11 +125,11 @@ router.get("/apellido/:apellidoUser", async (req, res) => {
 //baja usuario
 
 router.delete("/delete", async (req, res) => {
-  const idUser = req.body.id;
-
+  const dniUser = req.body.DNI;
+  console.log(req.body);
   await Users.destroy({
     where: {
-      id: idUser,
+      DNI: dniUser,
     },
   });
 
@@ -164,5 +155,9 @@ router.put("/update", async (req, res) => {
 router.get("/auth", validateToken, (req, res) => {
   res.json(req.user);
 });
+
+
+
+
 
 module.exports = router;

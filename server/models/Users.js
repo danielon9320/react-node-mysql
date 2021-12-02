@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    edad: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+    fechaNacimiento: {
+      type: DataTypes.DATEONLY,
+      defaultValue: false,
     },
     DNI: {
       type: DataTypes.INTEGER,

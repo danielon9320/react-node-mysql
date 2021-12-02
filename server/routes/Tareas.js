@@ -6,6 +6,7 @@ const { Users } = require("../models");
 router.post("/crearTarea", async (req, res) => {
   console.log(req.body);
   const {
+
     nombre,
     descripcion,
     estado,
@@ -13,6 +14,7 @@ router.post("/crearTarea", async (req, res) => {
     fechaParaRealizar,
     UserId,
   } = req.body;
+  //const fecha = new Date(fechaParaRealizar)
   try {
     Tareas.create({
       nombre,
@@ -59,80 +61,29 @@ router.get("/verTareasAreas/:areastrabajoId", async (req, res) => {
 router.get("/asignment", async (req, res) => {
   //debemos recibir una fecha desde el front para poder ajustar la comparacion. La variable se llama fechaParaRealizar.
   const actualDateBegin = new Date().setHours(0, 0, 0, 0);
+  console.log(actualDateBegin);
   const actualDateEnd = new Date().setHours(23, 59, 59, 999);
+  console.log(actualDateEnd);
   const tareas = await Tareas.findAll();
-  const tareasDia = tareas.map((tarea) => {
-    const fechaTarea = new Date(tarea.createdAt).valueOf();
-
-    if (fechaTarea > actualDateBegin && fechaTarea < actualDateEnd) {
-      //falta comparar con la fecha q se asigna para realizar
-      return { ...tarea.dataValues };
+  const tareasDia = await Promise.all( tareas.map(async(tarea) => {
+   
+    const {nombre: nombreUsuario, apellido} = await Users.findOne({where:{id:tarea.UserId}})
+    const fechaTarea = new Date(tarea.dataValues.fechaParaRealizar).valueOf();
+    console.log("HOLA", fechaTarea);
+    
+    if (fechaTarea >= actualDateBegin && fechaTarea <= actualDateEnd) {
+      //falta comparar con la fecha q se asigna para realizar 
+      
+      return { ...tarea.dataValues, nombreUsuario, apellido};
     }
-  });
+  }));
   const tareaDiaFiltrada = tareasDia.filter((tarea) => {
     return tarea != undefined;
   });
-  //  console.log(tareas);
-  console.log(tareaDiaFiltrada);
+   //console.log(tareas);
+  //console.log(tareaDiaFiltrada);
   res.json(tareaDiaFiltrada);
 });
-
-//asignar tarea (editar tarea ya creada para que un usuario se notifique que la tiene q hacer)
-router.put("/asignarTarea", async (req, res) => {
-
-  
-    const {idTarea, id} = req.body;
-    
-    Tareas.update(
-      { UserId: id },
-      {
-        where: {
-          id: idTarea,
-
-        },
-      }
-    );
-  
-    res.json("Actualizado con exito");
-  });
- 
-  //modificar estado de tarea
-
-router.put("/estadoTarea", async (req, res) => {
-  //revisar para luego migrar a true or false el estado
-
-    let estadoModificado;
-    let {idTarea, estado} = req.body;
-    console.log(idTarea, estado);
-    
-    if (estado == 0){
-      estadoModificado = 1;
-    } else{
-      estadoModificado = 0;
-    }
-    console.log(estadoModificado);
-    // 0 es pendiente 1 realizado
-    Tareas.update(
-      { estado: estadoModificado },
-      {
-        where: {
-          id: idTarea,
-
-        },
-      }
-    );
-  
-    res.json("Actualizado con exito");
-  });
- 
-
-
-
-
-
-
-
-
 
 //ver tareas por usuario
 router.get("/:userId", async (req, res) => {
